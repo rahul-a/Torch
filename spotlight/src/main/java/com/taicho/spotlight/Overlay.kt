@@ -29,16 +29,7 @@ internal class Overlay(context: Context) : FrameLayout(context) {
         setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         setWillNotDraw(false)
 
-        var bottomPadding = 0
-        if (Build.VERSION.SDK_INT >= 21) {
-            val resources = context.resources
-            val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
-            if (resourceId > 0) {
-                bottomPadding += resources.getDimensionPixelSize(resourceId)
-            }
-        }
-
-        setPadding(0, 0, 0, bottomPadding)
+        setPadding(0, 0, 0, getBottomPadding())
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -52,5 +43,18 @@ internal class Overlay(context: Context) : FrameLayout(context) {
             this.target.addPath(target.getPath())
             invalidate()
         }
+    }
+
+    private fun getBottomPadding(): Int {
+        var bottomPadding = 0
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            val resources = context.resources
+            val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
+            if (resourceId > 0) {
+                bottomPadding = resources.getDimensionPixelSize(resourceId)
+            }
+        }
+        return bottomPadding
     }
 }
