@@ -1,86 +1,86 @@
 package com.taicho.spotlight
 
 import android.app.Activity
+import android.content.Context
 import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import com.taicho.spotlight.target.Target
-import java.lang.ref.WeakReference
 
 private const val TAG = "Spotlight"
 
-class Spotlight private constructor(view: View): SpotlightCallback {
-    private val viewReference: WeakReference<View> = WeakReference(view)
-    private var targets: MutableList<Target> = mutableListOf()
+class Spotlight {
+
     private var overlay: Overlay? = null
     private var description: Description? = null
+    private val targets: MutableList<Target> = mutableListOf()
 
-    fun show() {
-        validate()
+    fun focus(activity: Activity) {
+        checkMainThread()
 
-        viewReference.get()?.let { view ->
-            overlay = addOverlay(view).apply {
-                for (target in targets) {
-                    showTarget(target)
-                }
+        addOverlay(activity).apply {
+            this@Spotlight.overlay = this
 
-                description?.let {
-                    addView(it.getView())
-                }
+            for (target in targets) {
+                add(target)
+            }
+
+            description?.let {
+                addView(it.getView())
             }
         }
     }
 
-    fun setTarget(target: Target): Spotlight {
+    fun target(target: Target): Spotlight {
         targets.add(target)
         return this
     }
 
-    fun addDescription(description: Description): Spotlight {
-        description.callback = this
+    fun describe(description: Description): Spotlight {
+        description.dismiss = { hide() }
         this.description = description
         return this
     }
 
-    override fun hide() {
+    private fun hide() {
+        detach()
+        reset()
+    }
+
+    private fun detach() {
         overlay?.let {
             if (it.isAttachedToWindow) {
                 (it.parent as ViewGroup).removeView(it)
             }
         }
+
+        overlay = null
     }
 
-    private fun addOverlay(view: View): Overlay {
-        return Overlay(view.context).apply {
-            getDecorView(view).addView(this)
+    private fun reset() {
+        description = null
+        targets.clear()
+    }
+
+    private fun addOverlay(context: Context): Overlay {
+        return Overlay(context).apply {
+            getDecorView(context).addView(this)
         }
     }
 
-    private fun getDecorView(view: View): ViewGroup = (view.context as Activity).window.decorView as ViewGroup
+    private fun getDecorView(context: Context): ViewGroup = (context as Activity).window.decorView as ViewGroup
 
-    private fun validate() {
-        check(Looper.myLooper() == Looper.getMainLooper()) { "Show must be called on the main thread" }
-        check(targets.isNotEmpty()) { "Targets must not be empty" }
-    }
-
-    companion object {
-        @JvmStatic
-        fun on(view: View): Spotlight {
-            return Spotlight(view)
-        }
+    private fun checkMainThread() {
+        check(Looper.myLooper() == Looper.getMainLooper()) { "Spotlight must be invoked on the main thread" }
     }
 
     abstract class Description {
-        internal var callback: SpotlightCallback? = null
+        internal lateinit var dismiss: (() -> Unit)
 
         abstract fun getView(): View
 
         fun dismiss() {
-            callback?.hide()
+            dismiss.invoke()
         }
     }
-}
-
-internal interface SpotlightCallback {
-    fun hide()
 }

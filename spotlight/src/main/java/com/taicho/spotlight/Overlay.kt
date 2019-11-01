@@ -35,7 +35,7 @@ internal class Overlay(context: Context) : FrameLayout(context) {
         canvas.drawPath(target, targetPaint)
     }
 
-    fun showTarget(target: Target) {
+    fun add(target: Target) {
         post {
             this.target.addPath(target.getPath())
             invalidate()
