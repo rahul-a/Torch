@@ -9,7 +9,7 @@ import com.taicho.spotlight.target.Target
 
 private const val TRANSLUCENT_COLOR = "#80000000"
 
-class Overlay(context: Context) : FrameLayout(context) {
+internal class Overlay(context: Context) : FrameLayout(context) {
 
     private val maskColor: Int = Color.parseColor(TRANSLUCENT_COLOR)
 

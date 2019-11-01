@@ -3,9 +3,9 @@ package com.taicho.sample
 import android.graphics.Point
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
-import com.taicho.spotlight.Overlay
+import com.taicho.spotlight.Spotlight
 import com.taicho.spotlight.target.Circle
 
 private const val TARGET_RADIUS = 100F
@@ -15,11 +15,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val overlay = Overlay(this)
-        (window.decorView as ViewGroup).addView(overlay)
+        val contentView = FrameLayout(this)
+        setContentView(contentView)
 
-        overlay.post {
-            overlay.showTarget(Circle(getCenter(overlay), TARGET_RADIUS))
+        contentView.post {
+            Spotlight
+                .on(contentView)
+                .setTarget(Circle(getCenter(contentView), TARGET_RADIUS))
+                .show()
         }
     }
 
