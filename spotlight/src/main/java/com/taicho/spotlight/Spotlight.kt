@@ -9,19 +9,24 @@ import java.lang.ref.WeakReference
 
 private const val TAG = "Spotlight"
 
-class Spotlight private constructor(view: View) {
+class Spotlight private constructor(view: View): SpotlightCallback {
     private val viewReference: WeakReference<View> = WeakReference(view)
     private var targets: MutableList<Target> = mutableListOf()
     private var overlay: Overlay? = null
+    private var description: Description? = null
 
     fun show() {
         validate()
 
         viewReference.get()?.let { view ->
-            overlay = addOverlay(view)
+            overlay = addOverlay(view).apply {
+                for (target in targets) {
+                    showTarget(target)
+                }
 
-            for (target in targets) {
-                overlay!!.showTarget(target)
+                description?.let {
+                    addView(it.getView())
+                }
             }
         }
     }
@@ -31,7 +36,13 @@ class Spotlight private constructor(view: View) {
         return this
     }
 
-    fun hide() {
+    fun addDescription(description: Description): Spotlight {
+        description.callback = this
+        this.description = description
+        return this
+    }
+
+    override fun hide() {
         overlay?.let {
             if (it.isAttachedToWindow) {
                 (it.parent as ViewGroup).removeView(it)
@@ -58,4 +69,18 @@ class Spotlight private constructor(view: View) {
             return Spotlight(view)
         }
     }
+
+    abstract class Description {
+        internal var callback: SpotlightCallback? = null
+
+        abstract fun getView(): View
+
+        fun dismiss() {
+            callback?.hide()
+        }
+    }
+}
+
+internal interface SpotlightCallback {
+    fun hide()
 }
