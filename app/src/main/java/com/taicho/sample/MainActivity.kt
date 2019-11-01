@@ -26,9 +26,9 @@ class MainActivity : AppCompatActivity() {
 
         Spotlight()
             .describe(DummyDescription(this))
-            .addTarget(CircleTarget(findViewById(R.id.btn1)))
-            .addTarget(RoundRectTarget(findViewById(R.id.btn2), 16F))
-            .focus(this)
+            .lock(CircleTarget(findViewById(R.id.btn1)))
+            .lock(RoundRectTarget(findViewById(R.id.btn2), 16F))
+            .aim(this)
     }
 
     private class DummyDescription(private val context: Context) : Spotlight.Description() {

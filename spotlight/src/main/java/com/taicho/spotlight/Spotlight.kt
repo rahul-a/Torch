@@ -3,19 +3,20 @@ package com.taicho.spotlight
 import android.app.Activity
 import android.content.Context
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import com.taicho.spotlight.target.Target
 
 private const val TAG = "Spotlight"
 
-class Spotlight {
+class Spotlight constructor(private val name: String? = null) {
 
     private var overlay: Overlay? = null
     private var description: Description? = null
     private val targets: MutableList<Target> = mutableListOf()
 
-    fun focus(activity: Activity) {
+    fun aim(activity: Activity, onStart: Consumer? = null, onStop: Consumer? = null) {
         checkMainThread()
 
         addOverlay(activity).apply {
@@ -26,18 +27,25 @@ class Spotlight {
             }
 
             description?.let {
+                it.dismiss = {
+                    Log.i(TAG, "Stopped spotlight $name")
+                    onStop?.invoke(name)
+                    hide()
+                }
                 addView(it.getView())
             }
         }
+
+        Log.i(TAG, "Started spotlight $name")
+        onStart?.invoke(name)
     }
 
-    fun addTarget(target: Target): Spotlight {
+    fun lock(target: Target): Spotlight {
         targets.add(target)
         return this
     }
 
     fun describe(description: Description): Spotlight {
-        description.dismiss = { hide() }
         this.description = description
         return this
     }
@@ -83,4 +91,7 @@ class Spotlight {
             dismiss.invoke()
         }
     }
+
 }
+
+typealias Consumer = (String?) -> Unit
