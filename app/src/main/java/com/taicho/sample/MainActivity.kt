@@ -8,7 +8,8 @@ import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.taicho.spotlight.Spotlight
-import com.taicho.spotlight.target.Circle
+import com.taicho.spotlight.target.CircleTarget
+import com.taicho.spotlight.target.RoundRectTarget
 
 private const val TARGET_RADIUS = 100F
 
@@ -21,7 +22,7 @@ class MainActivity : AppCompatActivity() {
 
         Spotlight()
             .describe(DummyDescription(this))
-            .target(Circle(findViewById(R.id.btn1), TARGET_RADIUS))
+            .addTarget(RoundRectTarget(findViewById(R.id.btn2), 12F))
             .focus(this)
     }
 

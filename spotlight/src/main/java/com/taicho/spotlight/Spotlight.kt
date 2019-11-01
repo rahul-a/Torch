@@ -31,7 +31,7 @@ class Spotlight {
         }
     }
 
-    fun target(target: Target): Spotlight {
+    fun addTarget(target: Target): Spotlight {
         targets.add(target)
         return this
     }
