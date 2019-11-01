@@ -19,10 +19,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(contentView)
 
         contentView.post {
-            Spotlight
+            val spotlight = Spotlight
                 .on(contentView)
                 .setTarget(Circle(getCenter(contentView), TARGET_RADIUS))
-                .show()
+
+            spotlight.show()
         }
     }
 
