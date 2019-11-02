@@ -2,7 +2,6 @@ package com.taicho.sample
 
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import com.taicho.sample.description.DummyDescription
 import com.taicho.sample.util.setFullScreenLayout
@@ -20,26 +19,28 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         setFullScreenLayout(Color.parseColor("#50000000"))
-        start(getSequence(), 0)
+
+        SpotlightSet(getSequence()).start(this)
     }
 
     private fun getSequence(): List<Spotlight> {
-        return listOf(
+        val result = mutableListOf<Spotlight>()
+        val gravityList = listOf(
             GRAVITY_TOP,
             GRAVITY_BOTTOM,
             GRAVITY_END,
             GRAVITY_START
-        ).map { makeSpotlight(it) }
+        )
+
+        result.addAll(gravityList.map { makeSpotlight(it, R.id.btn1) })
+        result.addAll(gravityList.map { makeSpotlight(it, R.id.btn2) })
+
+        return result
     }
 
-    private fun makeSpotlight(gravity: Int): Spotlight {
+    private fun makeSpotlight(gravity: Int, resId: Int): Spotlight {
         return Spotlight()
             .describe(DummyDescription(this, gravity))
-            .lock(CircleTarget(findViewById(R.id.btn1)))
-    }
-
-    private fun start(sequence: List<Spotlight>, index: Int) {
-        if (index >= sequence.size) return
-        sequence[index].aim(this, onStop = { start(sequence, index + 1) })
+            .lock(CircleTarget(findViewById(resId)))
     }
 }
