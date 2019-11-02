@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">sample</string>
-    <string name="dummy_description">This is a dummy description</string>
+    <string name="dummy_description">Description</string>
     <string name="label_dismiss">Dismiss</string>
 </resources>

@@ -3,12 +3,10 @@ package com.taicho.spotlight
 import android.app.Activity
 import android.content.Context
 import android.os.Looper
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import com.taicho.spotlight.gravity.NO_GRAVITY
 import com.taicho.spotlight.target.Target
-
-private const val TAG = "Spotlight"
 
 class Spotlight constructor(private val name: String? = null) {
 
@@ -18,26 +16,10 @@ class Spotlight constructor(private val name: String? = null) {
 
     fun aim(activity: Activity, onStart: Consumer? = null, onStop: Consumer? = null) {
         checkMainThread()
-
-        addOverlay(activity).apply {
-            this@Spotlight.overlay = this
-
-            for (target in targets) {
-                add(target)
-            }
-
-            description?.let {
-                it.dismiss = {
-                    Log.i(TAG, "Stopped spotlight $name")
-                    onStop?.invoke(name)
-                    hide()
-                }
-                addView(it.getView())
-            }
+        overlay = overlay(activity)
+        overlay?.post {
+            render(onStart, onStop)
         }
-
-        Log.i(TAG, "Started spotlight $name")
-        onStart?.invoke(name)
     }
 
     fun lock(target: Target): Spotlight {
@@ -70,22 +52,44 @@ class Spotlight constructor(private val name: String? = null) {
         targets.clear()
     }
 
-    private fun addOverlay(context: Context): Overlay {
+    private fun overlay(context: Context): Overlay {
         return Overlay(context).apply {
             getDecorView(context).addView(this)
         }
     }
 
-    private fun getDecorView(context: Context): ViewGroup = (context as Activity).window.decorView as ViewGroup
+    private fun getDecorView(context: Context): ViewGroup =
+        (context as Activity).window.decorView as ViewGroup
 
     private fun checkMainThread() {
         check(Looper.myLooper() == Looper.getMainLooper()) { "Spotlight must be invoked on the main thread" }
     }
 
-    abstract class Description {
+    private fun render(onStart: Consumer?, onStop: Consumer?) {
+        renderTargets()
+
+        description?.let {
+            it.dismiss = {
+                onStop?.invoke(name)
+                hide()
+            }
+
+            overlay?.addDescription(it)
+        }
+
+        onStart?.invoke(name)
+    }
+
+    private fun renderTargets() {
+        for (target in targets) {
+            overlay?.add(target)
+        }
+    }
+
+    abstract class Description(internal val gravity: Int = NO_GRAVITY) {
         internal lateinit var dismiss: (() -> Unit)
 
-        abstract fun getView(): View
+        abstract fun getView(root: ViewGroup): View
 
         fun dismiss() {
             dismiss.invoke()
