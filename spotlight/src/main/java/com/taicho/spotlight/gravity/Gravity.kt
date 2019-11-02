@@ -58,12 +58,56 @@ abstract class Gravity(internal val src: Rect, internal val dst: Rect) {
             }
 
             return when(flag.and(GRAVITY_MASK)) {
-                GRAVITY_START -> StartGravity(src, dst)
-                GRAVITY_END -> EndGravity(src, dst)
-                GRAVITY_TOP -> TopGravity(src, dst)
-                GRAVITY_BOTTOM -> BottomGravity(src, dst)
+                GRAVITY_START -> Start(src, dst)
+                GRAVITY_END -> End(src, dst)
+                GRAVITY_TOP -> Top(src, dst)
+                GRAVITY_BOTTOM -> Bottom(src, dst)
                 else -> voidGravity
             }
         }
     }
+}
+
+internal class Start(src: Rect, dst: Rect): Gravity(src, dst) {
+
+    override fun translationX(target: RectF): Float {
+        val tX = target.left - src.width()
+        if (tX < 0) return (dst.width() - src.width()).toFloat()
+        return tX
+    }
+
+    override fun translationY(target: RectF)= alignCenterY(target)
+}
+
+internal class Top(src: Rect, dst: Rect): Gravity(src, dst) {
+
+    override fun translationY(target: RectF): Float {
+        val tY = target.top - src.height()
+        if (tY < 0) return (dst.height() - src.height()).toFloat()
+        return tY
+    }
+
+    override fun translationX(target: RectF) = alignCenterX(target)
+}
+
+internal class Bottom(src: Rect, dst: Rect): Gravity(src, dst) {
+
+    override fun translationY(target: RectF): Float {
+        val tY = target.bottom
+        if (tY + src.height() > dst.height()) return 0F
+        return tY
+    }
+
+    override fun translationX(target: RectF) = alignCenterX(target)
+}
+
+internal class End(src: Rect, dst: Rect): Gravity(src, dst) {
+
+    override fun translationX(target: RectF): Float {
+        val tX = target.right
+        if (tX  + src.width() > dst.width()) return 0F
+        return tX
+    }
+
+    override fun translationY(target: RectF) = alignCenterY(target)
 }
