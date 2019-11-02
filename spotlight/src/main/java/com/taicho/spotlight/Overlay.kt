@@ -3,6 +3,7 @@ package com.taicho.spotlight
 import android.content.Context
 import android.graphics.*
 import android.view.View
+import android.view.View.MeasureSpec.*
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 import androidx.core.view.marginBottom
@@ -48,13 +49,22 @@ internal class Overlay(context: Context) : FrameLayout(context) {
     }
 
     fun addDescription(description: Spotlight.Description) {
-        val view = description.getView(this)
+        val targetRect = RectF()
+        val view = measureAndGet(description)
+
         addView(view)
-        post {
-            val targetRect = RectF()
-            target.computeBounds(targetRect, true)
-            applyGravity(view, description, targetRect)
-        }
+        target.computeBounds(targetRect, true)
+
+        applyGravity(view, description, targetRect)
+    }
+
+    private fun measureAndGet(description: Spotlight.Description): View {
+        val view = description.getView(this)
+        val widthSpec = makeMeasureSpec(measuredWidth, UNSPECIFIED)
+        val heightSpec = makeMeasureSpec(measuredHeight, UNSPECIFIED)
+
+        measureChild(view, widthSpec, heightSpec)
+        return view
     }
 
     private fun applyGravity(view: View, description: Spotlight.Description, targetRect: RectF) {
