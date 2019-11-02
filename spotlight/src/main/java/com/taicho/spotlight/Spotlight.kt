@@ -16,9 +16,9 @@ class Spotlight constructor(private val name: String? = null) {
 
     fun aim(activity: Activity, onStart: Consumer? = null, onStop: Consumer? = null) {
         checkMainThread()
-        overlay = overlay(activity)
-        overlay?.post {
-            render(onStart, onStop)
+        overlay = Overlay(activity).apply {
+            addOverlay(activity, this)
+            renderSpotlight(this, onStart, onStop)
         }
     }
 
@@ -52,12 +52,6 @@ class Spotlight constructor(private val name: String? = null) {
         targets.clear()
     }
 
-    private fun overlay(context: Context): Overlay {
-        return Overlay(context).apply {
-            getDecorView(context).addView(this)
-        }
-    }
-
     private fun getDecorView(context: Context): ViewGroup =
         (context as Activity).window.decorView as ViewGroup
 
@@ -65,25 +59,33 @@ class Spotlight constructor(private val name: String? = null) {
         check(Looper.myLooper() == Looper.getMainLooper()) { "Spotlight must be invoked on the main thread" }
     }
 
-    private fun render(onStart: Consumer?, onStop: Consumer?) {
-        renderTargets()
-
-        description?.let {
-            it.dismiss = {
-                onStop?.invoke(name)
-                hide()
-            }
-
-            overlay?.addDescription(it)
+    private fun renderTargets(overlay: Overlay) {
+        for (target in targets) {
+            overlay.add(target)
         }
-
-        onStart?.invoke(name)
     }
 
-    private fun renderTargets() {
-        for (target in targets) {
-            overlay?.add(target)
+    private fun renderSpotlight(overlay: Overlay, onStart: Consumer?, onStop: Consumer?): Boolean {
+        description?.dismiss = {
+            onStop?.invoke(name)
+            hide()
         }
+
+        return overlay.post {
+            renderTargets(overlay)
+            renderDescription(overlay)
+            onStart?.invoke(name)
+        }
+    }
+
+    private fun renderDescription(overlay: Overlay) {
+        description?.let {
+            overlay.addDescription(it)
+        }
+    }
+
+    private fun addOverlay(activity: Activity, it: Overlay) {
+        getDecorView(activity).addView(it)
     }
 
     abstract class Description(internal val gravity: Int = NO_GRAVITY) {
