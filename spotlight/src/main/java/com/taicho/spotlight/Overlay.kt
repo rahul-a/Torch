@@ -56,6 +56,7 @@ internal class Overlay(context: Context) : FrameLayout(context) {
         target.computeBounds(targetRect, true)
 
         applyGravity(view, description, targetRect)
+        description.onViewCreated(view, targetRect)
     }
 
     private fun measureAndGet(description: Spotlight.Description): View {

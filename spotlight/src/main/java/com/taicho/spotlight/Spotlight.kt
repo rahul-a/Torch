@@ -2,7 +2,9 @@ package com.taicho.spotlight
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.RectF
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import com.taicho.spotlight.gravity.NO_GRAVITY
@@ -92,6 +94,9 @@ class Spotlight constructor(private val name: String? = null) {
         internal lateinit var dismiss: (() -> Unit)
 
         abstract fun getView(root: ViewGroup): View
+        open fun onViewCreated(view: View, target: RectF) {
+            Log.i("Description", "OnViewCreated: $target")
+        }
 
         fun dismiss() {
             dismiss.invoke()
