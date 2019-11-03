@@ -17,14 +17,6 @@ class Torch constructor(private val target: ViewTarget) {
         render()
     }
 
-    private fun render() {
-        if (!::overlay.isInitialized) return
-
-        overlay.post {
-            overlay.render(target)
-        }
-    }
-
     fun hide() {
         if (!::overlay.isInitialized) return
 
@@ -32,6 +24,14 @@ class Torch constructor(private val target: ViewTarget) {
             if (it.isAttachedToWindow) {
                 (it.parent as ViewGroup).removeView(it)
             }
+        }
+    }
+
+    private fun render() {
+        if (!::overlay.isInitialized) return
+
+        overlay.post {
+            overlay.render(target)
         }
     }
 
@@ -53,8 +53,8 @@ interface TorchListener {
     fun onHide(name: String)
 }
 
-internal class TorchListenerImpl(private val torch: Torch,
-                                 private val listener: TorchListener) : TorchListener {
+private class TorchListenerImpl(private val torch: Torch,
+                                private val listener: TorchListener) : TorchListener {
     override fun onHide(name: String) {
         torch.hide()
         listener.onHide(name)

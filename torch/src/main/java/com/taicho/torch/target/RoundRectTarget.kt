@@ -5,8 +5,9 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.view.View
 
-open class RoundRectTarget(
-    name: String, view: View,
+class RoundRectTarget(
+    name: String,
+    view: View,
     details: Details,
     private val cornerRadius: Float
 ): ViewTarget(view, name, details) {
