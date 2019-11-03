@@ -7,10 +7,7 @@ import com.taicho.sample.details.DummyTargetHolder
 import com.taicho.sample.util.setFullScreenLayout
 import com.taicho.torch.Torch
 import com.taicho.torch.TorchSet
-import com.taicho.torch.gravity.GRAVITY_BOTTOM
-import com.taicho.torch.gravity.GRAVITY_END
-import com.taicho.torch.gravity.GRAVITY_START
-import com.taicho.torch.gravity.GRAVITY_TOP
+import com.taicho.torch.gravity.*
 import com.taicho.torch.target.RoundRectTarget
 
 class MainActivity : AppCompatActivity() {
@@ -30,7 +27,8 @@ class MainActivity : AppCompatActivity() {
             GRAVITY_TOP,
             GRAVITY_BOTTOM,
             GRAVITY_END,
-            GRAVITY_START
+            GRAVITY_START,
+            NO_GRAVITY
         )
 
         result.addAll(gravityList.mapIndexed { i, gravity ->

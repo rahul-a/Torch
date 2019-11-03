@@ -56,17 +56,12 @@ internal abstract class Gravity(internal val src: Rect, internal val dst: Rect) 
             val src = getRect(view)
             val dst = getDecorRect(view)
 
-            val voidGravity = object : Gravity(src, dst) {
-                override fun translationY(target: Rect) = 0F
-                override fun translationX(target: Rect) = 0F
-            }
-
             return when (flag.and(GRAVITY_MASK)) {
                 GRAVITY_START -> Start(src, dst)
                 GRAVITY_END -> End(src, dst)
                 GRAVITY_TOP -> Top(src, dst)
                 GRAVITY_BOTTOM -> Bottom(src, dst)
-                else -> voidGravity
+                else -> Void(src, dst)
             }
         }
     }

@@ -46,3 +46,8 @@ internal class End(src: Rect, dst: Rect) : Gravity(src, dst) {
 
     override fun translationY(target: Rect) = alignCenterY(target).toFloat()
 }
+
+internal class Void(src: Rect, dst: Rect): Gravity(src, dst) {
+    override fun translationY(target: Rect) = dst.top.toFloat()
+    override fun translationX(target: Rect) = dst.left.toFloat()
+}
