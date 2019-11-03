@@ -1,4 +1,4 @@
-package com.taicho.spotlight.gravity
+package com.taicho.torch.gravity
 
 import android.graphics.Rect
 import android.graphics.RectF

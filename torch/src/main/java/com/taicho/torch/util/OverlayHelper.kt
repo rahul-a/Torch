@@ -1,4 +1,4 @@
-package com.taicho.spotlight.util
+package com.taicho.torch.util
 
 import android.content.Context
 import android.os.Build

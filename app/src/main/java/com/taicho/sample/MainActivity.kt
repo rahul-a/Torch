@@ -5,12 +5,12 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.taicho.sample.description.DummyDescription
 import com.taicho.sample.util.setFullScreenLayout
-import com.taicho.spotlight.*
-import com.taicho.spotlight.gravity.GRAVITY_BOTTOM
-import com.taicho.spotlight.gravity.GRAVITY_END
-import com.taicho.spotlight.gravity.GRAVITY_START
-import com.taicho.spotlight.gravity.GRAVITY_TOP
-import com.taicho.spotlight.target.CircleTarget
+import com.taicho.torch.*
+import com.taicho.torch.gravity.GRAVITY_BOTTOM
+import com.taicho.torch.gravity.GRAVITY_END
+import com.taicho.torch.gravity.GRAVITY_START
+import com.taicho.torch.gravity.GRAVITY_TOP
+import com.taicho.torch.target.CircleTarget
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,11 +20,11 @@ class MainActivity : AppCompatActivity() {
 
         setFullScreenLayout(Color.parseColor("#50000000"))
 
-        SpotlightSet(getSequence()).start(this)
+        TorchSet(getSequence()).start(this)
     }
 
-    private fun getSequence(): List<Spotlight> {
-        val result = mutableListOf<Spotlight>()
+    private fun getSequence(): List<Torch> {
+        val result = mutableListOf<Torch>()
         val gravityList = listOf(
             GRAVITY_TOP,
             GRAVITY_BOTTOM,
@@ -38,8 +38,8 @@ class MainActivity : AppCompatActivity() {
         return result
     }
 
-    private fun makeSpotlight(gravity: Int, resId: Int): Spotlight {
-        return Spotlight()
+    private fun makeSpotlight(gravity: Int, resId: Int): Torch {
+        return Torch()
             .describe(DummyDescription(this, gravity))
             .lock(CircleTarget(findViewById(resId)))
     }

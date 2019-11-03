@@ -7,9 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.taicho.sample.R
-import com.taicho.spotlight.Spotlight
+import com.taicho.torch.Torch
 
-class DummyDescription(private val context: Context, gravity: Int) : Spotlight.Description(gravity) {
+class DummyDescription(private val context: Context, gravity: Int) : Torch.Description(gravity) {
 
     @SuppressLint("InflateParams")
     override fun getView(root: ViewGroup): View {

@@ -1,4 +1,4 @@
-package com.taicho.spotlight
+package com.taicho.torch
 
 import android.app.Activity
 import android.content.Context
@@ -7,10 +7,10 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import com.taicho.spotlight.gravity.NO_GRAVITY
-import com.taicho.spotlight.target.Target
+import com.taicho.torch.gravity.NO_GRAVITY
+import com.taicho.torch.target.Target
 
-class Spotlight constructor(private val name: String? = null) {
+class Torch constructor(private val name: String? = null) {
 
     private var overlay: Overlay? = null
     private var description: Description? = null
@@ -24,12 +24,12 @@ class Spotlight constructor(private val name: String? = null) {
         }
     }
 
-    fun lock(target: Target): Spotlight {
+    fun lock(target: Target): Torch {
         targets.add(target)
         return this
     }
 
-    fun describe(description: Description): Spotlight {
+    fun describe(description: Description): Torch {
         this.description = description
         return this
     }
@@ -58,7 +58,7 @@ class Spotlight constructor(private val name: String? = null) {
         (context as Activity).window.decorView as ViewGroup
 
     private fun checkMainThread() {
-        check(Looper.myLooper() == Looper.getMainLooper()) { "Spotlight must be invoked on the main thread" }
+        check(Looper.myLooper() == Looper.getMainLooper()) { "Torch must be invoked on the main thread" }
     }
 
     private fun renderTargets(overlay: Overlay) {

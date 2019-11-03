@@ -1,4 +1,4 @@
-package com.taicho.spotlight.target
+package com.taicho.torch.target
 
 import android.graphics.Path
 import android.view.View

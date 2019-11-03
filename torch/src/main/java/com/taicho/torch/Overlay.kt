@@ -1,4 +1,4 @@
-package com.taicho.spotlight
+package com.taicho.torch
 
 import android.content.Context
 import android.graphics.*
@@ -10,10 +10,10 @@ import androidx.core.view.marginBottom
 import androidx.core.view.marginEnd
 import androidx.core.view.marginStart
 import androidx.core.view.marginTop
-import com.taicho.spotlight.gravity.Gravity
-import com.taicho.spotlight.target.Target
-import com.taicho.spotlight.util.OverlayHelper.Companion.navigationBarHeight
-import com.taicho.spotlight.util.OverlayHelper.Companion.statusBarHeight
+import com.taicho.torch.gravity.Gravity
+import com.taicho.torch.target.Target
+import com.taicho.torch.util.OverlayHelper.Companion.navigationBarHeight
+import com.taicho.torch.util.OverlayHelper.Companion.statusBarHeight
 
 private const val TRANSLUCENT_COLOR = "#80000000"
 
@@ -48,7 +48,7 @@ internal class Overlay(context: Context) : FrameLayout(context) {
         invalidate()
     }
 
-    fun addDescription(description: Spotlight.Description) {
+    fun addDescription(description: Torch.Description) {
         val targetRect = RectF()
         val view = measureAndGet(description)
 
@@ -59,7 +59,7 @@ internal class Overlay(context: Context) : FrameLayout(context) {
         description.onViewCreated(view, targetRect)
     }
 
-    private fun measureAndGet(description: Spotlight.Description): View {
+    private fun measureAndGet(description: Torch.Description): View {
         val view = description.getView(this)
         val widthSpec = makeMeasureSpec(measuredWidth, UNSPECIFIED)
         val heightSpec = makeMeasureSpec(measuredHeight, UNSPECIFIED)
@@ -68,7 +68,7 @@ internal class Overlay(context: Context) : FrameLayout(context) {
         return view
     }
 
-    private fun applyGravity(view: View, description: Spotlight.Description, targetRect: RectF) {
+    private fun applyGravity(view: View, description: Torch.Description, targetRect: RectF) {
         Gravity.create(getSrc(view), getDst(), description.gravity).apply(view, targetRect)
     }
 

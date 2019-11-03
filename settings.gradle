@@ -1,2 +1,2 @@
-include ':app', ':spotlight'
+include ':app', ':torch'
 rootProject.name='sample'
