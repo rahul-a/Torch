@@ -46,14 +46,14 @@ internal class Overlay(context: Context, private val torchListener: TorchListene
     }
 
     private fun addLayoutListener(viewTarget: ViewTarget) {
-        val details = viewTarget.details
-        val rect = viewTarget.targetRect.toRect()
+        val details = viewTarget.targetHolder
+        val targetRect = viewTarget.targetRect.toRect()
         val name = viewTarget.name
 
 
-        val view = details.getView(LayoutInflater.from(context), this)
+        val view = details.create(LayoutInflater.from(context), this)
         val onLayout = {
-            details.onViewCreated(view, rect)
+            details.onBind(view, targetRect)
             details.dismiss = { torchListener.onHide(name) }
             torchListener.onShow(name)
         }

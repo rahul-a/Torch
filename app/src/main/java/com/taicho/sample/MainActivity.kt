@@ -3,7 +3,7 @@ package com.taicho.sample
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.taicho.sample.details.DummyDetails
+import com.taicho.sample.details.DummyTargetHolder
 import com.taicho.sample.util.setFullScreenLayout
 import com.taicho.torch.Torch
 import com.taicho.torch.TorchSet
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun flashTorch(gravity: Int, resId: Int, name: String): Torch {
-        val details = DummyDetails(gravity)
+        val details = DummyTargetHolder(gravity)
         val target = RoundRectTarget(name, findViewById(resId), details, 16F)
         return Torch(target)
     }

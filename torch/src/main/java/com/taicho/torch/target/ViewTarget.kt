@@ -1,14 +1,14 @@
 package com.taicho.torch.target
 
 import android.graphics.*
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.annotation.CallSuper
-import com.taicho.torch.gravity.Gravity
-import com.taicho.torch.gravity.NO_GRAVITY
+import com.taicho.torch.target.holder.TargetHolder
 
-abstract class ViewTarget(private val view: View, val name: String, val details: Details) {
+abstract class ViewTarget(
+    private val view: View,
+    val name: String,
+    val targetHolder: TargetHolder
+) {
 
     val targetRect by lazy {
         val left = center.x - view.measuredWidth.div(2F)
@@ -36,19 +36,4 @@ abstract class ViewTarget(private val view: View, val name: String, val details:
         return location
     }
 
-    abstract class Details(private val gravity: Int = NO_GRAVITY) {
-        internal lateinit var dismiss: (() -> Unit)
-
-        abstract fun getView(inflater: LayoutInflater, root: ViewGroup): View
-
-        @CallSuper
-        open fun onViewCreated(view: View, targetRect: Rect) {
-            val gravity = Gravity.create(view, gravity)
-            gravity.apply(view, targetRect)
-        }
-
-        fun dismiss() {
-            dismiss.invoke()
-        }
-    }
 }

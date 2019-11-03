@@ -5,11 +5,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.taicho.sample.R
-import com.taicho.torch.target.ViewTarget
+import com.taicho.torch.target.holder.TargetHolder
 
-class DummyDetails(gravity: Int) : ViewTarget.Details(gravity) {
+class DummyTargetHolder(gravity: Int) : TargetHolder(gravity) {
 
-    override fun getView(inflater: LayoutInflater, root: ViewGroup): View {
+    override fun create(inflater: LayoutInflater, root: ViewGroup): View {
         val view = inflater.inflate(R.layout.details_sample, root, false)
         val dismissBtn = view.findViewById<TextView>(R.id.title)
 
