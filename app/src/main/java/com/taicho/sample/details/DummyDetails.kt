@@ -16,5 +16,4 @@ class DummyDetails(gravity: Int) : ViewTarget.Details(gravity) {
         dismissBtn.setOnClickListener { dismiss() }
         return view
     }
-
 }
