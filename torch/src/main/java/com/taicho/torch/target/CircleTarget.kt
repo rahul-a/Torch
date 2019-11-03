@@ -4,7 +4,7 @@ import android.graphics.Path
 import android.view.View
 import kotlin.math.max
 
-class CircleTarget(view: View) : ViewTarget(view) {
+class CircleTarget(name: String, view: View, details: Details) : ViewTarget(name, view, details) {
 
     override fun getPath(): Path {
         val point = getCenter()

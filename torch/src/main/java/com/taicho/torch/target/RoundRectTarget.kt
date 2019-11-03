@@ -4,7 +4,11 @@ import android.graphics.Path
 import android.graphics.RectF
 import android.view.View
 
-class RoundRectTarget(view: View, private val cornerRadius: Float): ViewTarget(view) {
+open class RoundRectTarget(
+    name: String, view: View,
+    details: Details,
+    private val cornerRadius: Float
+): ViewTarget(name, view, details) {
 
     override fun getPath(): Path {
         return Path().apply {

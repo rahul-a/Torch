@@ -3,7 +3,7 @@ package com.taicho.sample
 import android.graphics.Color
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.taicho.sample.description.DummyDescription
+import com.taicho.sample.description.DummyDetails
 import com.taicho.sample.util.setFullScreenLayout
 import com.taicho.torch.*
 import com.taicho.torch.gravity.GRAVITY_BOTTOM
@@ -32,15 +32,13 @@ class MainActivity : AppCompatActivity() {
             GRAVITY_START
         )
 
-        result.addAll(gravityList.map { makeSpotlight(it, R.id.btn1) })
-        result.addAll(gravityList.map { makeSpotlight(it, R.id.btn2) })
+        result.addAll(gravityList.mapIndexed { i, gravity -> makeSpotlight(gravity, R.id.btn1, "Foo-${i + 1}") })
+        result.addAll(gravityList.mapIndexed { i, gravity -> makeSpotlight(gravity, R.id.btn2, "Bar-${i + 1}") })
 
         return result
     }
 
-    private fun makeSpotlight(gravity: Int, resId: Int): Torch {
-        return Torch()
-            .describe(DummyDescription(this, gravity))
-            .lock(CircleTarget(findViewById(resId)))
+    private fun makeSpotlight(gravity: Int, resId: Int, name: String): Torch {
+        return Torch(CircleTarget(name, findViewById(resId), DummyDetails(gravity)))
     }
 }

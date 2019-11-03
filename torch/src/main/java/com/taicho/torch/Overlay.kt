@@ -1,7 +1,9 @@
 package com.taicho.torch
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
+import android.view.LayoutInflater
 import android.view.View
 import android.view.View.MeasureSpec.*
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
@@ -11,13 +13,14 @@ import androidx.core.view.marginEnd
 import androidx.core.view.marginStart
 import androidx.core.view.marginTop
 import com.taicho.torch.gravity.Gravity
-import com.taicho.torch.target.Target
+import com.taicho.torch.target.ViewTarget
 import com.taicho.torch.util.OverlayHelper.Companion.navigationBarHeight
 import com.taicho.torch.util.OverlayHelper.Companion.statusBarHeight
 
 private const val TRANSLUCENT_COLOR = "#80000000"
 
-internal class Overlay(context: Context) : FrameLayout(context) {
+@SuppressLint("ViewConstructor")
+internal class Overlay(context: Context, private val listener: Listener) : FrameLayout(context) {
 
     private val maskColor: Int = Color.parseColor(TRANSLUCENT_COLOR)
 
@@ -43,24 +46,27 @@ internal class Overlay(context: Context) : FrameLayout(context) {
         canvas.drawPath(target, targetPaint)
     }
 
-    fun add(target: Target) {
+    fun render(target: ViewTarget) {
+        target.details.dismiss = { listener.onHide(target.name) }
         this.target.addPath(target.getPath())
+
+        val detailsView = measureAndGet(target.details)
+        addView(detailsView)
+        target.onViewCreated(detailsView)
+        translate(detailsView, target)
+
+        listener.onShow(target.name)
         invalidate()
     }
 
-    fun addDescription(description: Torch.Description) {
+    private fun translate(view: View, viewTarget: ViewTarget) {
         val targetRect = RectF()
-        val view = measureAndGet(description)
-
-        addView(view)
         target.computeBounds(targetRect, true)
-
-        applyGravity(view, description, targetRect)
-        description.onViewCreated(view, targetRect)
+        applyGravity(view, viewTarget.details, targetRect)
     }
 
-    private fun measureAndGet(description: Torch.Description): View {
-        val view = description.getView(this)
+    private fun measureAndGet(details: ViewTarget.Details): View {
+        val view = details.getView(LayoutInflater.from(context), this)
         val widthSpec = makeMeasureSpec(measuredWidth, UNSPECIFIED)
         val heightSpec = makeMeasureSpec(measuredHeight, UNSPECIFIED)
 
@@ -68,8 +74,8 @@ internal class Overlay(context: Context) : FrameLayout(context) {
         return view
     }
 
-    private fun applyGravity(view: View, description: Torch.Description, targetRect: RectF) {
-        Gravity.create(getSrc(view), getDst(), description.gravity).apply(view, targetRect)
+    private fun applyGravity(view: View, details: ViewTarget.Details, targetRect: RectF) {
+        Gravity.create(getSrc(view), getDst(), details.gravity).apply(view, targetRect)
     }
 
     private fun getDst(): Rect {
