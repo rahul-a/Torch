@@ -8,15 +8,15 @@ import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewTreeObserver
 import android.widget.FrameLayout
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.toRect
 import com.taicho.torch.target.ViewTarget
-
-private const val TRANSLUCENT_COLOR = "#80000000"
 
 @SuppressLint("ViewConstructor")
 internal class Overlay(context: Context, private val torchListener: TorchListener) :
     FrameLayout(context) {
 
-    private val maskColor: Int = Color.parseColor(TRANSLUCENT_COLOR)
+    private val maskColor: Int = ContextCompat.getColor(context, R.color.torch_translucent)
 
     private val targetPaint by lazy {
         Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -41,24 +41,26 @@ internal class Overlay(context: Context, private val torchListener: TorchListene
     }
 
     fun render(viewTarget: ViewTarget) {
-        val detailsView = targetDetails(viewTarget)
         target = viewTarget
-        addLayoutListener(viewTarget, detailsView)
-        addView(detailsView)
+        addLayoutListener(viewTarget)
     }
 
-    private fun addLayoutListener(viewTarget: ViewTarget, detailsView: View) {
+    private fun addLayoutListener(viewTarget: ViewTarget) {
+        val details = viewTarget.details
+        val rect = viewTarget.targetRect.toRect()
+        val name = viewTarget.name
+
+
+        val view = details.getView(LayoutInflater.from(context), this)
         val onLayout = {
-            viewTarget.onViewCreated(detailsView)
-            viewTarget.details.dismiss = { torchListener.onHide(viewTarget.name) }
-            torchListener.onShow(viewTarget.name)
+            details.onViewCreated(view, rect)
+            details.dismiss = { torchListener.onHide(name) }
+            torchListener.onShow(name)
         }
 
+        addView(view)
         viewTreeObserver.addOnGlobalLayoutListener(GlobalLayoutListener(onLayout))
     }
-
-    private fun targetDetails(viewTarget: ViewTarget) =
-        viewTarget.details.getView(LayoutInflater.from(context), this)
 
     inner class GlobalLayoutListener(private val onLayout: () -> Unit) :
         ViewTreeObserver.OnGlobalLayoutListener {
@@ -69,3 +71,4 @@ internal class Overlay(context: Context, private val torchListener: TorchListene
         }
     }
 }
+

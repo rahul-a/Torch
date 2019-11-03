@@ -12,9 +12,6 @@ open class RoundRectTarget(
 ): ViewTarget(view, name, details) {
 
     override fun draw(canvas: Canvas, value: Float, paint: Paint) {
-        canvas.save()
-        canvas.translate(rawLocation()[0].toFloat(), rawLocation()[1].toFloat())
-        canvas.drawRoundRect(RectF(bounds), cornerRadius, cornerRadius, paint)
-        canvas.restore()
+        canvas.drawRoundRect(targetRect, cornerRadius, cornerRadius, paint)
     }
 }

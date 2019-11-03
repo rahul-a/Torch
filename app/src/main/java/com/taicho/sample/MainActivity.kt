@@ -3,14 +3,14 @@ package com.taicho.sample
 import android.graphics.Color
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.taicho.sample.description.DummyDetails
+import androidx.core.content.ContextCompat
+import com.taicho.sample.details.DummyDetails
 import com.taicho.sample.util.setFullScreenLayout
 import com.taicho.torch.*
 import com.taicho.torch.gravity.GRAVITY_BOTTOM
 import com.taicho.torch.gravity.GRAVITY_END
 import com.taicho.torch.gravity.GRAVITY_START
 import com.taicho.torch.gravity.GRAVITY_TOP
-import com.taicho.torch.target.CircleTarget
 import com.taicho.torch.target.RoundRectTarget
 
 class MainActivity : AppCompatActivity() {
@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        setFullScreenLayout(Color.parseColor("#50000000"))
+        setFullScreenLayout(ContextCompat.getColor(this, R.color.colorPrimaryDark))
 
         TorchSet(getSequence()).start(this)
     }

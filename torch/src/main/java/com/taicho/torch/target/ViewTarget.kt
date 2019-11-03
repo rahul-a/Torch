@@ -10,8 +10,13 @@ import com.taicho.torch.gravity.NO_GRAVITY
 
 abstract class ViewTarget(private val view: View, val name: String, val details: Details) {
 
-    val bounds by lazy {
-        Rect(0, 0, view.measuredWidth, view.measuredHeight)
+    val targetRect by lazy {
+        val left = center.x - view.measuredWidth.div(2F)
+        val top = center.y - view.measuredHeight.div(2F)
+        val right = center.x + view.measuredWidth.div(2F)
+        val bottom = center.y + view.measuredHeight.div(2F)
+
+        RectF(left, top, right, bottom)
     }
 
     val center by lazy {
@@ -25,34 +30,22 @@ abstract class ViewTarget(private val view: View, val name: String, val details:
 
     abstract fun draw(canvas: Canvas, value: Float, paint: Paint)
 
-    @CallSuper
-    open fun onViewCreated(view: View) {
-        val gravity = Gravity.create(view, details.gravity)
-        gravity.apply(view, getTargetRect())
-    }
-
-    fun rawLocation(): IntArray {
-        return getLocation()
-    }
-
-    protected fun getTargetRect(): Rect {
-        val left = center.x - bounds.centerX()
-        val top = center.y - bounds.centerY()
-        val right = center.x + bounds.centerX()
-        val bottom = center.y + bounds.centerY()
-        return Rect(left, top, right, bottom)
-    }
-
     private fun getLocation(): IntArray {
         val location = IntArray(2)
         view.getLocationInWindow(location)
         return location
     }
 
-    abstract class Details(internal val gravity: Int = NO_GRAVITY) {
+    abstract class Details(private val gravity: Int = NO_GRAVITY) {
         internal lateinit var dismiss: (() -> Unit)
 
         abstract fun getView(inflater: LayoutInflater, root: ViewGroup): View
+
+        @CallSuper
+        open fun onViewCreated(view: View, targetRect: Rect) {
+            val gravity = Gravity.create(view, gravity)
+            gravity.apply(view, targetRect)
+        }
 
         fun dismiss() {
             dismiss.invoke()

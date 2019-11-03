@@ -2,6 +2,8 @@ package com.taicho.torch.util
 
 import android.content.Context
 import android.os.Build
+import androidx.core.content.ContextCompat
+import com.taicho.torch.R
 
 class OverlayHelper {
 
@@ -26,5 +28,6 @@ class OverlayHelper {
             }
             return height
         }
+
     }
 }

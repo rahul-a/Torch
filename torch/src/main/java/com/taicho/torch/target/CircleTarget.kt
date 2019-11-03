@@ -12,6 +12,6 @@ class CircleTarget(name: String, view: View, details: Details) : ViewTarget(view
     }
 
     private fun getRadius(): Float {
-        return max(this.bounds.exactCenterX(), this.bounds.exactCenterY())
+        return max(targetRect.width(), targetRect.height())
     }
 }
