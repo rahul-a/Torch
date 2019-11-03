@@ -1,21 +1,17 @@
 package com.taicho.torch.target
 
-import android.graphics.Path
+import android.graphics.Canvas
+import android.graphics.Paint
 import android.view.View
 import kotlin.math.max
 
-class CircleTarget(name: String, view: View, details: Details) : ViewTarget(name, view, details) {
+class CircleTarget(name: String, view: View, details: Details) : ViewTarget(view, name, details) {
 
-    override fun getPath(): Path {
-        val point = getCenter()
-
-        return Path().apply {
-            addCircle(point.x.toFloat(), point.y.toFloat(), getRadius(), Path.Direction.CW)
-        }
+    override fun draw(canvas: Canvas, value: Float, paint: Paint) {
+        canvas.drawCircle(center.x.toFloat(), center.y.toFloat(), getRadius(), paint)
     }
 
     private fun getRadius(): Float {
-        val bounds = getBounds()
-        return max(bounds.exactCenterX(), bounds.exactCenterY())
+        return max(this.bounds.exactCenterX(), this.bounds.exactCenterY())
     }
 }

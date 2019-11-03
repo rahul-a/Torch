@@ -3,111 +3,139 @@ package com.taicho.torch.gravity
 import android.graphics.Rect
 import android.graphics.RectF
 import android.view.View
+import android.view.ViewGroup
+import androidx.core.view.marginBottom
+import androidx.core.view.marginEnd
+import androidx.core.view.marginStart
+import androidx.core.view.marginTop
+import com.taicho.torch.util.OverlayHelper
 
-const val GRAVITY_START = 0x8
-const val GRAVITY_END = 0x4
+const val NO_GRAVITY     = 0x0
+const val GRAVITY_TOP    = 0x1
 const val GRAVITY_BOTTOM = 0x2
-const val GRAVITY_TOP = 0x1
-const val NO_GRAVITY = 0x0
+const val GRAVITY_END    = 0x4
+const val GRAVITY_START  = 0x8
 
 internal const val GRAVITY_MASK = 0xf
 
-abstract class Gravity(internal val src: Rect, internal val dst: Rect) {
+internal abstract class Gravity(internal val src: Rect, internal val dst: Rect) {
 
-    abstract fun translationX(target: RectF): Float
-    abstract fun translationY(target: RectF): Float
+    abstract fun translationX(target: Rect): Float
+    abstract fun translationY(target: Rect): Float
 
-    fun apply(view: View, target: RectF) {
+    fun apply(view: View, target: Rect) {
         view.translationX = translationX(target)
         view.translationY = translationY(target)
     }
 
-    internal fun alignCenterX(target: RectF): Float {
+    internal fun alignCenterX(target: Rect): Int {
         val upper = target.centerX() - src.centerX()
         val lower = target.centerX() + src.centerX()
 
         return normalize(upper, lower, src.width(), dst.width())
     }
 
-    internal fun alignCenterY(target: RectF): Float {
+    internal fun alignCenterY(target: Rect): Int {
         val upper = target.centerY() - src.centerY()
         val lower = target.centerY() + src.centerY()
 
         return normalize(upper, lower, src.height(), dst.height())
     }
 
-    private fun normalize(upper: Float, lower: Float, cur: Int, max: Int): Float {
+    private fun normalize(upper: Int, lower: Int, cur: Int, max: Int): Int {
         var z = upper
 
         if (upper < 0) {
-            z = 0F
+            z = 0
         }
 
         if (lower > max) {
-            z = (max - cur).toFloat()
+            z = max - cur
         }
         return z
     }
 
     companion object {
         @JvmStatic
-        fun create(src:Rect, dst: Rect, flag: Int): Gravity {
+        internal fun create(view: View, flag: Int): Gravity {
+            val src = getSrc(view)
+            val dst = getDst(view)
+
             val voidGravity = object : Gravity(src, dst) {
-                override fun translationY(target: RectF) = 0F
-                override fun translationX(target: RectF) = 0F
+                override fun translationY(target: Rect) = 0F
+                override fun translationX(target: Rect) = 0F
             }
 
             return when(flag.and(GRAVITY_MASK)) {
-                GRAVITY_START -> Start(src, dst)
-                GRAVITY_END -> End(src, dst)
-                GRAVITY_TOP -> Top(src, dst)
+                GRAVITY_START  -> Start(src, dst)
+                GRAVITY_END    -> End(src, dst)
+                GRAVITY_TOP    -> Top(src, dst)
                 GRAVITY_BOTTOM -> Bottom(src, dst)
                 else -> voidGravity
             }
+        }
+
+        private fun getDst(view: View): Rect {
+            val context = view.context
+            val container = view.parent as ViewGroup
+            val decorHeight = OverlayHelper.navigationBarHeight(context) + OverlayHelper.statusBarHeight(
+                context
+            )
+            return Rect(0, 0, container.measuredWidth, container.measuredHeight - decorHeight)
+        }
+
+        private fun getSrc(view: View): Rect {
+            val hMargin = view.marginStart + view.marginEnd
+            val vMargin = view.marginBottom + view.marginTop
+
+            val width = view.measuredWidth + hMargin
+            val height = view.measuredHeight + vMargin
+
+            return Rect(0, 0, width, height)
         }
     }
 }
 
 internal class Start(src: Rect, dst: Rect): Gravity(src, dst) {
 
-    override fun translationX(target: RectF): Float {
+    override fun translationX(target: Rect): Float {
         val tX = target.left - src.width()
         if (tX < 0) return (dst.width() - src.width()).toFloat()
-        return tX
+        return tX.toFloat()
     }
 
-    override fun translationY(target: RectF)= alignCenterY(target)
+    override fun translationY(target: Rect)= alignCenterY(target).toFloat()
 }
 
 internal class Top(src: Rect, dst: Rect): Gravity(src, dst) {
 
-    override fun translationY(target: RectF): Float {
+    override fun translationY(target: Rect): Float {
         val tY = target.top - src.height()
         if (tY < 0) return (dst.height() - src.height()).toFloat()
-        return tY
+        return tY.toFloat()
     }
 
-    override fun translationX(target: RectF) = alignCenterX(target)
+    override fun translationX(target: Rect) = alignCenterX(target).toFloat()
 }
 
 internal class Bottom(src: Rect, dst: Rect): Gravity(src, dst) {
 
-    override fun translationY(target: RectF): Float {
+    override fun translationY(target: Rect): Float {
         val tY = target.bottom
         if (tY + src.height() > dst.height()) return 0F
-        return tY
+        return tY.toFloat()
     }
 
-    override fun translationX(target: RectF) = alignCenterX(target)
+    override fun translationX(target: Rect) = alignCenterX(target).toFloat()
 }
 
 internal class End(src: Rect, dst: Rect): Gravity(src, dst) {
 
-    override fun translationX(target: RectF): Float {
+    override fun translationX(target: Rect): Float {
         val tX = target.right
         if (tX  + src.width() > dst.width()) return 0F
-        return tX
+        return tX.toFloat()
     }
 
-    override fun translationY(target: RectF) = alignCenterY(target)
+    override fun translationY(target: Rect) = alignCenterY(target).toFloat()
 }

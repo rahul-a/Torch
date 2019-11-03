@@ -1,39 +1,46 @@
 package com.taicho.torch.target
 
-import android.graphics.Path
-import android.graphics.Point
-import android.graphics.Rect
-import android.graphics.RectF
-import android.util.Log
+import android.graphics.*
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.CallSuper
+import com.taicho.torch.gravity.Gravity
 import com.taicho.torch.gravity.NO_GRAVITY
 
-abstract class ViewTarget(
-    val name: String,
-    private val view: View,
-    val details: Details
-) {
+abstract class ViewTarget(private val view: View, val name: String, val details: Details) {
 
-    abstract fun getPath(): Path
-    open fun onViewCreated(view: View) {}
+    val bounds by lazy {
+        Rect(0, 0, view.measuredWidth, view.measuredHeight)
+    }
 
-    fun getCenter(): Point {
+    val center by lazy {
         val location = getLocation()
 
         val x = location[0] + view.measuredWidth.toFloat() / 2
         val y = location[1] + view.measuredHeight.toFloat() / 2
 
-        return Point(x.toInt(), y.toInt())
+        Point(x.toInt(), y.toInt())
     }
 
-    fun getBounds(): Rect {
-        return Rect(0, 0, view.measuredWidth, view.measuredHeight)
+    abstract fun draw(canvas: Canvas, value: Float, paint: Paint)
+
+    @CallSuper
+    open fun onViewCreated(view: View) {
+        val gravity = Gravity.create(view, details.gravity)
+        gravity.apply(view, getTargetRect())
     }
 
     fun rawLocation(): IntArray {
         return getLocation()
+    }
+
+    protected fun getTargetRect(): Rect {
+        val left = center.x - bounds.centerX()
+        val top = center.y - bounds.centerY()
+        val right = center.x + bounds.centerX()
+        val bottom = center.y + bounds.centerY()
+        return Rect(left, top, right, bottom)
     }
 
     private fun getLocation(): IntArray {

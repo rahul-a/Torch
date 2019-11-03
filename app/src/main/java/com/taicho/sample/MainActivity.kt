@@ -11,6 +11,7 @@ import com.taicho.torch.gravity.GRAVITY_END
 import com.taicho.torch.gravity.GRAVITY_START
 import com.taicho.torch.gravity.GRAVITY_TOP
 import com.taicho.torch.target.CircleTarget
+import com.taicho.torch.target.RoundRectTarget
 
 class MainActivity : AppCompatActivity() {
 
@@ -39,6 +40,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun makeSpotlight(gravity: Int, resId: Int, name: String): Torch {
-        return Torch(CircleTarget(name, findViewById(resId), DummyDetails(gravity)))
+        return Torch(RoundRectTarget(name, findViewById(resId), DummyDetails(gravity), 16F))
     }
 }
