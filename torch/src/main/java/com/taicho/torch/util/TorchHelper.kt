@@ -1,19 +1,50 @@
 package com.taicho.torch.util
 
+import android.app.Activity
 import android.content.Context
+import android.graphics.Rect
 import android.os.Build
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.marginBottom
+import androidx.core.view.marginEnd
+import androidx.core.view.marginStart
+import androidx.core.view.marginTop
 import com.taicho.torch.R
 
-class OverlayHelper {
+internal class TorchHelper {
 
     companion object {
-        @JvmStatic
-        fun navigationBarHeight(context: Context): Int =
+
+        internal fun getDecorRect(view: View): Rect {
+            val outRect = Rect()
+
+            (view.context as? Activity)?.window?.decorView?.let {
+                it.getDrawingRect(outRect)
+                outRect.bottom = outRect.height() - navigationBarHeight(it.context)
+                outRect.top = statusBarHeight(it.context)
+            }
+
+            return outRect
+        }
+
+        internal fun getRect(view: View): Rect {
+            val hMargin = view.marginStart + view.marginEnd
+            val vMargin = view.marginBottom + view.marginTop
+
+            return Rect(
+                0,
+                0,
+                view.measuredWidth + hMargin,
+                view.measuredHeight + vMargin
+            )
+        }
+
+        private fun navigationBarHeight(context: Context): Int =
             computeHeight(context, "navigation_bar_height")
 
-        @JvmStatic
-        fun statusBarHeight(context: Context): Int =
+        private fun statusBarHeight(context: Context): Int =
             computeHeight(context, "status_bar_height")
 
         private fun computeHeight(context: Context, name: String): Int {
@@ -28,6 +59,5 @@ class OverlayHelper {
             }
             return height
         }
-
     }
 }

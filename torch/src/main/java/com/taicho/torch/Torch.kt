@@ -43,24 +43,24 @@ class Torch constructor(private val target: ViewTarget) {
     }
 
     private fun addOverlay(activity: Activity, torchListener: TorchListener) {
-        overlay = Overlay(activity, TorchListenerImpl(this, torchListener))
+        overlay = Overlay(activity, InternalListener(torchListener))
         getDecorView(activity)?.addView(overlay)
+    }
+
+    private inner class InternalListener(private val listener: TorchListener) : TorchListener {
+        override fun onHide(name: String) {
+            hide()
+            listener.onHide(name)
+        }
+
+        override fun onShow(name: String) {
+            listener.onShow(name)
+        }
     }
 }
 
 interface TorchListener {
     fun onShow(name: String)
     fun onHide(name: String)
-}
 
-private class TorchListenerImpl(private val torch: Torch,
-                                private val listener: TorchListener) : TorchListener {
-    override fun onHide(name: String) {
-        torch.hide()
-        listener.onHide(name)
-    }
-
-    override fun onShow(name: String) {
-        listener.onShow(name)
-    }
 }
