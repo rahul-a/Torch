@@ -13,7 +13,8 @@ import com.taicho.torch.target.ViewTarget
 private const val TRANSLUCENT_COLOR = "#80000000"
 
 @SuppressLint("ViewConstructor")
-internal class Overlay(context: Context, private val listener: Listener) : FrameLayout(context) {
+internal class Overlay(context: Context, private val torchListener: TorchListener) :
+    FrameLayout(context) {
 
     private val maskColor: Int = Color.parseColor(TRANSLUCENT_COLOR)
 
@@ -39,24 +40,32 @@ internal class Overlay(context: Context, private val listener: Listener) : Frame
         target?.draw(canvas, 1F, targetPaint)
     }
 
-    fun render(target: ViewTarget) {
-        this.target = target
-        val detailsView = target.details.getView(LayoutInflater.from(context), this)
-        target.details.dismiss = { listener.onHide(target.name) }
-        render(detailsView)
+    fun render(viewTarget: ViewTarget) {
+        val detailsView = targetDetails(viewTarget)
+        target = viewTarget
+        addLayoutListener(viewTarget, detailsView)
+        addView(detailsView)
     }
 
-    private fun render(detailsView: View) {
-        addView(detailsView)
-        viewTreeObserver.addOnGlobalLayoutListener(object :
-            ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                viewTreeObserver.removeOnGlobalLayoutListener(this)
-                target?.let {
-                    it.onViewCreated(detailsView)
-                    listener.onShow(it.name)
-                }
-            }
-        })
+    private fun addLayoutListener(viewTarget: ViewTarget, detailsView: View) {
+        val onLayout = {
+            viewTarget.onViewCreated(detailsView)
+            viewTarget.details.dismiss = { torchListener.onHide(viewTarget.name) }
+            torchListener.onShow(viewTarget.name)
+        }
+
+        viewTreeObserver.addOnGlobalLayoutListener(GlobalLayoutListener(onLayout))
+    }
+
+    private fun targetDetails(viewTarget: ViewTarget) =
+        viewTarget.details.getView(LayoutInflater.from(context), this)
+
+    inner class GlobalLayoutListener(private val onLayout: () -> Unit) :
+        ViewTreeObserver.OnGlobalLayoutListener {
+
+        override fun onGlobalLayout() {
+            viewTreeObserver.removeOnGlobalLayoutListener(this)
+            onLayout()
+        }
     }
 }

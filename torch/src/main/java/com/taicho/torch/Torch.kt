@@ -6,16 +6,14 @@ import android.os.Looper
 import android.view.ViewGroup
 import com.taicho.torch.target.ViewTarget
 
-class Torch constructor(private val target: ViewTarget): Listener {
+class Torch constructor(private val target: ViewTarget) {
 
     private lateinit var overlay: Overlay
-    private var listener: Listener? = null
 
-    fun beam(activity: Activity, listener: Listener) {
+    fun beam(activity: Activity, torchListener: TorchListener) {
         checkMainThread()
-        this.listener = listener
 
-        addOverlay(activity)
+        addOverlay(activity, torchListener)
         render()
     }
 
@@ -27,7 +25,7 @@ class Torch constructor(private val target: ViewTarget): Listener {
         }
     }
 
-    override fun onHide(name: String) {
+    fun hide() {
         if (!::overlay.isInitialized) return
 
         overlay.let {
@@ -35,11 +33,6 @@ class Torch constructor(private val target: ViewTarget): Listener {
                 (it.parent as ViewGroup).removeView(it)
             }
         }
-        listener?.onHide(name)
-    }
-
-    override fun onShow(name: String) {
-        listener?.onShow(name)
     }
 
     private fun getDecorView(context: Context): ViewGroup? =
@@ -49,13 +42,25 @@ class Torch constructor(private val target: ViewTarget): Listener {
         check(Looper.myLooper() == Looper.getMainLooper()) { "Torch must be invoked on the main thread" }
     }
 
-    private fun addOverlay(activity: Activity) {
-        overlay = Overlay(activity, this)
+    private fun addOverlay(activity: Activity, torchListener: TorchListener) {
+        overlay = Overlay(activity, TorchListenerImpl(this, torchListener))
         getDecorView(activity)?.addView(overlay)
     }
 }
 
-interface Listener {
+interface TorchListener {
     fun onShow(name: String)
     fun onHide(name: String)
+}
+
+internal class TorchListenerImpl(private val torch: Torch,
+                                 private val listener: TorchListener) : TorchListener {
+    override fun onHide(name: String) {
+        torch.hide()
+        listener.onHide(name)
+    }
+
+    override fun onShow(name: String) {
+        listener.onShow(name)
+    }
 }

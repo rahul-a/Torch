@@ -11,7 +11,7 @@ class TorchSet(private val list: List<Torch>) {
 
     private fun start(activity: Activity, sequence: List<Torch>, index: Int) {
         if (index >= sequence.size) return
-        sequence[index].beam(activity, object : Listener {
+        sequence[index].beam(activity, object : TorchListener {
             override fun onHide(name: String) {
                 Log.i("TorchSet", "OnHide: $name")
                 start(activity, sequence, index + 1)
