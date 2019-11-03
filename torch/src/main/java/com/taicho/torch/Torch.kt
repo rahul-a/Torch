@@ -19,20 +19,12 @@ class Torch constructor(private val target: ViewTarget) {
 
     fun hide() {
         if (!::overlay.isInitialized) return
-
-        overlay.let {
-            if (it.isAttachedToWindow) {
-                (it.parent as ViewGroup).removeView(it)
-            }
-        }
+        overlay.let { if (it.isAttachedToWindow) (it.parent as ViewGroup).removeView(it) }
     }
 
     private fun render() {
         if (!::overlay.isInitialized) return
-
-        overlay.post {
-            overlay.render(target)
-        }
+        with(overlay) { post { render(target) } }
     }
 
     private fun getDecorView(context: Context): ViewGroup? =
